@@ -7,6 +7,7 @@ ITALY_TZ = pytz.timezone("Europe/Rome")
 BOX_START = time(15, 30)
 BOX_END = time(16, 0)
 
+
 def get_nq_data(days_back=3):
     if days_back > 59:
         raise ValueError("yfinance supports max 60 days for 5m data")
@@ -30,8 +31,6 @@ def extract_valid_breakout_boxes(df):
         if df_box.empty:
             continue
 
-        open_price = df_box.iloc[0]['Open']
-        close_price = df_box.iloc[-1]['Close']
         high = df_box['High'].max()
         low = df_box['Low'].min()
 
@@ -40,22 +39,47 @@ def extract_valid_breakout_boxes(df):
 
         breakout = 'none'
         broken = False
+        confirm = False
+        double_confirm = False
         confirm_time = None
+        breakout_time = None
+        level_to_break = None
 
         df_post = df_day[df_day['time_italy'] > BOX_END]
 
         for _, row in df_post.iterrows():
-            if broken:
-                break
+
+            ts = row['timestamp_italy']
+            close = row['Close']
+            high_candle = row['High']
+            low_candle = row['Low']
+
+            if broken and confirm_time is None:
+                if breakout == 'up':
+                    if close > level_to_break:
+                        confirm = True
+                        confirm_time = ts.strftime("%H:%M:%S")
+                        break
+                    elif high_candle > level_to_break:
+                        level_to_break = high_candle
+                elif breakout == 'down':
+                    if close < level_to_break:
+                        confirm = True
+                        confirm_time = ts.strftime("%H:%M:%S")
+                        break
+                    elif low_candle < level_to_break:
+                        level_to_break = low_candle
 
             # Valid breakout by close
             if row['Close'] > high:
                 breakout = 'up'
-                #breakout_time = ts.strftime("%H:%M:%S");
+                breakout_time = ts.strftime("%H:%M:%S");
                 broken = True
+                level_to_break = high_candle
             elif row['Close'] < low:
                 breakout = 'down'
-                #breakout_time = ts.strftime("%H:%M:%S")
+                breakout_time = ts.strftime("%H:%M:%S")
+                level_to_break = low_candle
                 broken = True
             else:
                 # If not broken yet, update spikes
@@ -66,17 +90,16 @@ def extract_valid_breakout_boxes(df):
 
         box = {
             'date': str(date),
-            #'open': open_price,
-            #'close': close_price,
-            'high': high,
-            'low': low,
-            'initial_high': initial_high,
-            'initial_low': initial_low,
+            'high_box': high,
+            'low_box': low,
+            'initial_high_box': initial_high,
+            'initial_low_box': initial_low,
             'start_time': df_box.iloc[0]['timestamp_italy'].strftime("%H:%M:%S"),
             'end_time': df_box.iloc[-1]['timestamp_italy'].strftime("%H:%M:%S"),
             'breakout': breakout,
-            #'breakout_time': breakout_time,
-            'level_to_break': level_to_break
+            'breakout_time': breakout_time,
+            'confirmed': confirm,
+            'confirm_time': confirm_time,
         }
         boxes.append(box)
 
