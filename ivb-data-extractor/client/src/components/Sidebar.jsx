@@ -25,7 +25,7 @@ const navItems = [
         text: "Stats",
         icon: <ReceiptLongOutlined/>,
     }
-    ];
+];
 
 const Sidebar = ({
                      drawerWidth,

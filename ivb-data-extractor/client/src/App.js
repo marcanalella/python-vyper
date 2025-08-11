@@ -4,8 +4,8 @@ import {useMemo} from "react";
 import {useSelector} from "react-redux";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import {themeSettings} from "theme";
-import Layout from "scenes/layout";
 import Stats from "scenes/stats";
+import Layout from "./scenes/layout";
 
 function App() {
     const mode = useSelector((state) => state.global.mode);
