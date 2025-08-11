@@ -25,6 +25,8 @@ const Stats = () => {
         const isNonMediumScreens = useMediaQuery("(min-width: 1200px)");
         const [tickers, setTickers] = useState([]);
         const [selectedTicker, setSelectedTicker] = useState("");
+        const [dataset, setDataset] = useState([]);
+        const [selectedDataset, setSelectedDataset] = useState("");
         const [rows, setRows] = useState([]);
 
         const [filterBreakout, setFilterBreakout] = useState("");
@@ -69,7 +71,8 @@ const Stats = () => {
 
         const fetchData = async () => {
             try {
-                const response = await fetch(environment.baseUrl + `/get-data/?ticker=${selectedTicker}`, {
+                const response = await fetch(environment.baseUrl +
+                    `/get-data/?ticker=${selectedTicker}&dataset=${selectedDataset}`, {
                     method: 'GET'
                 });
                 if (response.status === 200) {
@@ -87,6 +90,32 @@ const Stats = () => {
             }
         };
 
+        useEffect(() => {
+            if (!selectedTicker) {
+                setDataset([]);
+                setSelectedDataset("");
+                return;
+            }
+            const fetchDataSet = async () => {
+                try {
+                    const response = await fetch(environment.baseUrl +
+                        `/get-dataset/?ticker=${selectedTicker}`, {
+                        method: 'GET'
+                    });
+                    if (response.status === 200) {
+                        console.log("ciao");
+                        console.log(response);
+                        const res = await response.json();
+                        setDataset(res);
+                    } else {
+                        console.error("Error fetching dataset:", response.status);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch dataset :", error);
+                }
+            };
+            fetchDataSet();
+        }, [selectedTicker]);
 
 
         /* LOCAL TEST useEffect(() => {
@@ -339,17 +368,10 @@ const Stats = () => {
         return (
             <Box m="1.5rem 2.5rem">
                 <FlexBetween>
-                    {selectedTicker !== null ? (
-                        <Header
-                            title={`IVB State - ${selectedTicker}`}
-                            subtitle={`Reports of IVB ${selectedTicker}`}
-                        />
-                    ) : (
-                        <Header
-                            title="IVB State"
-                            subtitle="Select a ticker to see reports"
-                        />
-                    )}
+                    <Header
+                        title={`IVB State ${selectedTicker}`}
+                        subtitle={`Dataset from ${selectedDataset}`}
+                    />
                     <Box>
                         <Button
                             sx={{
@@ -362,7 +384,7 @@ const Stats = () => {
                             onClick={handleOpen}
                         >
                             <FilterAltOutlined sx={{mr: "10px"}}/>
-                            Select Pair
+                            Select Data
                         </Button>
                         <Dialog
                             open={open}
@@ -381,7 +403,7 @@ const Stats = () => {
                                         value={selectedTicker}
                                         label="Ticker"
                                         onChange={(e) => {
-                                            setSelectedTicker(e.target.value)
+                                            setSelectedTicker(e.target.value);
                                         }}
                                         sx={{
                                             color: theme.palette.background,
@@ -390,6 +412,32 @@ const Stats = () => {
                                         {tickers && tickers.length > 0 ? (
                                             tickers.map(a => (
                                                 <MenuItem key={a} value={a}>{a}</MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem disabled>No Data</MenuItem>
+                                        )}
+                                    </Select>
+                                </Stack>
+                            </DialogContent>
+                            <DialogContent>
+                                <Stack
+                                    spacing={2}
+                                    margin={2}>
+
+                                    <InputLabel>Dataset</InputLabel>
+                                    <Select
+                                        value={selectedDataset}
+                                        label="Dataset"
+                                        onChange={(e) => {
+                                            setSelectedDataset(e.target.value)
+                                        }}
+                                        sx={{
+                                            color: theme.palette.background,
+                                        }}
+                                    >
+                                        {dataset && dataset.length > 0 ? (
+                                            dataset.map(b => (
+                                                <MenuItem key={b} value={b}>{b}</MenuItem>
                                             ))
                                         ) : (
                                             <MenuItem disabled>No Data</MenuItem>
@@ -406,13 +454,15 @@ const Stats = () => {
                                     onClick={handleClose}>Cancel</Button>
 
                                 {/* Generate button */}
-                                <Button
-                                    sx={{
-                                        color: theme.palette.secondary.light,
-                                    }}
-                                    onClick={handleGenerate} variant="contained">
-                                    Generate
-                                </Button>
+                                {selectedDataset && (
+                                    <Button
+                                        sx={{
+                                            color: theme.palette.secondary.light,
+                                        }}
+                                        onClick={handleGenerate} variant="contained">
+                                        Generate
+                                    </Button>
+                                )}
                             </DialogActions>
                         </Dialog>
                     </Box>
