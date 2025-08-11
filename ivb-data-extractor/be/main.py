@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from database import create_db_and_tables, save_boxes_to_db
 from extractor import extract_valid_breakout_boxes, get_data_from_yf
@@ -16,6 +17,13 @@ class Request(BaseModel):
 
 app = FastAPI(title="IVB Stats BE")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 def on_startup():
