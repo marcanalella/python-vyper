@@ -3,6 +3,7 @@ uvicorn
 sqlalchemy
 pandas
 pydantic
-apscheduler
+psycopg2-binary
 yfinance
+numpy
 pytz

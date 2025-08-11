@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean, Time, create_engine
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
+
 
 class BreakoutBox(Base):
     __tablename__ = "breakout_boxes"
@@ -31,3 +32,4 @@ class BreakoutBox(Base):
     inv_target_068_hit = Column(Boolean)
     inv_target_100_hit = Column(Boolean)
     inv_target_200_hit = Column(Boolean)
+    dataset = Column(String)

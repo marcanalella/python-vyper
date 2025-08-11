@@ -32,7 +32,7 @@ def get_data_from_yf(days_back=3, ticker="NQ=F"):
     return df
 
 
-def extract_valid_breakout_boxes(df, ticker):
+def extract_valid_breakout_boxes(df, ticker, dataset):
     boxes = []
 
     for date, df_day in df.groupby("date_italy"):
@@ -244,6 +244,7 @@ def extract_valid_breakout_boxes(df, ticker):
             'inv_target_200_hit': inv_target_hit['inv_target_200_hit'],
             # 'max_fibo_extension_inv_up': max_fibo_extension_inv_up,
             # 'max_fibo_extension_inv_down': max_fibo_extension_inv_down,
+            'dataset': dataset,
         }
 
         boxes.append(box)
