@@ -200,71 +200,71 @@ const Stats = () => {
         }, [filteredRows]);
 
         const breakoutDistribution = useMemo(() => {
-            const timeMap = {};
+            const mapB = {up: 0, down: 0, none: 0};
             filteredRows.forEach((row) => {
-                const time = row.breakout?.slice(0, 5); // HH:MM
-                if (time) {
-                    timeMap[time] = (timeMap[time] || 0) + 1;
+                const key = row.breakout?.toString().toLowerCase();
+                if (key === "up" || key === "down" || key === "none") {
+                    mapB[key] += 1;
                 }
             });
-            return Object.entries(timeMap).map(([k, v]) => ({name: k, value: v}));
+            return Object.entries(mapB).map(([k, v]) => ({name: k, value: v}));
         }, [filteredRows]);
 
 
         const breakoutTimeDistribution = useMemo(() => {
-            const timeMap = {};
+            const timeBMap = {};
             filteredRows.forEach((row) => {
                 const time = row.breakout_time?.slice(0, 5); // HH:MM
                 if (time) {
-                    timeMap[time] = (timeMap[time] || 0) + 1;
+                    timeBMap[time] = (timeBMap[time] || 0) + 1;
                 }
             });
-            return Object.entries(timeMap).map(([k, v]) => ({name: k, value: v}));
+            return Object.entries(timeBMap).map(([k, v]) => ({name: k, value: v}));
         }, [filteredRows]);
 
         const inversionDistribution = useMemo(() => {
-            const timeMap = {};
+            const mapD = {up: 0, down: 0, none: 0};
             filteredRows.forEach((row) => {
-                const time = row.inverse_breakout?.slice(0, 5); // HH:MM
-                if (time) {
-                    timeMap[time] = (timeMap[time] || 0) + 1;
+                const key = row.inverse_breakout?.toString().toLowerCase();
+                if (key === "up" || key === "down" || key === "none") {
+                    mapD[key] += 1;
                 }
             });
-            return Object.entries(timeMap).map(([k, v]) => ({name: k, value: v}));
+            return Object.entries(mapD).map(([k, v]) => ({name: k, value: v}));
         }, [filteredRows]);
 
 
         const inversionTimeDistribution = useMemo(() => {
-            const timeMap = {};
+            const timeDMap = {};
             filteredRows.forEach((row) => {
                 const time = row.inverse_breakout_time?.slice(0, 5); // HH:MM
                 if (time) {
-                    timeMap[time] = (timeMap[time] || 0) + 1;
+                    timeDMap[time] = (timeDMap[time] || 0) + 1;
                 }
             });
-            return Object.entries(timeMap).map(([k, v]) => ({name: k, value: v}));
+            return Object.entries(timeDMap).map(([k, v]) => ({name: k, value: v}));
         }, [filteredRows]);
 
         const inversionConfirmDistribution = useMemo(() => {
-            const map = {true: 0, false: 0};
+            const mapIC = {true: 0, false: 0};
             filteredRows.forEach((row) => {
                 const key = row.inv_confirm?.toString().toLowerCase();
                 if (key === "true" || key === "false") {
-                    map[key] += 1;
+                    mapIC[key] += 1;
                 }
             });
-            return Object.entries(map).map(([k, v]) => ({name: k, value: v}));
+            return Object.entries(mapIC).map(([k, v]) => ({name: k, value: v}));
         }, [filteredRows]);
 
         const inversionTimeConfirmDistribution = useMemo(() => {
-            const timeMap = {};
+            const timeMapIC = {};
             filteredRows.forEach((row) => {
                 const time = row.inv_confirm_time?.slice(0, 5); // HH:MM
                 if (time) {
-                    timeMap[time] = (timeMap[time] || 0) + 1;
+                    timeMapIC[time] = (timeMapIC[time] || 0) + 1;
                 }
             });
-            return Object.entries(timeMap).map(([k, v]) => ({name: k, value: v}));
+            return Object.entries(timeMapIC).map(([k, v]) => ({name: k, value: v}));
         }, [filteredRows]);
 
 
@@ -277,27 +277,17 @@ const Stats = () => {
             };
 
             filteredRows.forEach((row) => {
-                if (row.target_05_hit === 1 || row.target_05_hit === "1" || row.target_05_hit === "True") targetMap["0.5"] += 1;
-                if (row.target_068_hit === 1 || row.target_068_hit === "1" || row.target_068_hit === "True") targetMap["0.68"] += 1;
-                if (row.target_100_hit === 1 || row.target_100_hit === "1" || row.target_100_hit === "True") targetMap["1.0"] += 1;
-                if (row.target_200_hit === 1 || row.target_200_hit === "1" || row.target_200_hit === "True") targetMap["2.0"] += 1;
+                if (row.target_05_hit === true || row.target_05_hit === 1 || row.target_05_hit === "1" || row.target_05_hit === "true") targetMap["0.5"] += 1;
+                if (row.target_068_hit === true || row.target_068_hit === 1 || row.target_068_hit === "1" || row.target_068_hit === "true") targetMap["0.68"] += 1;
+                if (row.target_100_hit === true || row.target_100_hit === 1 || row.target_100_hit === "1" || row.target_100_hit === "true") targetMap["1.0"] += 1;
+                if (row.target_200_hit === true || row.target_200_hit === 1 || row.target_200_hit === "1" || row.target_200_hit === "true") targetMap["2.0"] += 1;
             });
 
             return Object.entries(targetMap).map(([k, v]) => ({name: `Target ${k}`, value: v}));
         }, [filteredRows]);
-        useMemo(() => {
-            const timeMap = {};
-            filteredRows.forEach((row) => {
-                const time = row.inv_confirm_time?.slice(0, 5); // HH:MM
-                if (time) {
-                    timeMap[time] = (timeMap[time] || 0) + 1;
-                }
-            });
-            return Object.entries(timeMap).map(([k, v]) => ({name: k, value: v}));
-        }, [filteredRows]);
 
         const inversionTargetDistribution = useMemo(() => {
-            const targetMap = {
+            const targetInversionMap = {
                 "0.5": 0,
                 "0.68": 0,
                 "1.0": 0,
@@ -305,25 +295,14 @@ const Stats = () => {
             };
 
             filteredRows.forEach((row) => {
-                if (row.inv_target_05_hit === "True") targetMap["0.5"] += 1;
-                if (row.inv_target_068_hit === "True") targetMap["0.68"] += 1;
-                if (row.inv_target_100_hit === "True") targetMap["1.0"] += 1;
-                if (row.inv_target_200_hit === "True") targetMap["2.0"] += 1;
+                if (row.inv_target_05_hit === true || row.inv_target_05_hit === 1 || row.inv_target_05_hit === "1" || row.inv_target_05_hit === "true") targetInversionMap["0.5"] += 1;
+                if (row.inv_target_068_hit === true || row.inv_target_068_hit === 1 || row.inv_target_068_hit === "1" || row.inv_target_068_hit === "true") targetInversionMap["0.68"] += 1;
+                if (row.inv_target_100_hit === true || row.inv_target_100_hit === 1 || row.inv_target_100_hit === "1" || row.inv_target_100_hit === "true") targetInversionMap["1.0"] += 1;
+                if (row.inv_target_200_hit === true || row.inv_target_200_hit === 1 || row.inv_target_200_hit === "1" || row.inv_target_200_hit === "true") targetInversionMap["2.0"] += 1;
             });
 
-            return Object.entries(targetMap).map(([k, v]) => ({name: `Target ${k}`, value: v}));
+            return Object.entries(targetInversionMap).map(([k, v]) => ({name: `Target ${k}`, value: v}));
         }, [filteredRows]);
-        useMemo(() => {
-            const timeMap = {};
-            filteredRows.forEach((row) => {
-                const time = row.inv_confirm_time?.slice(0, 5); // HH:MM
-                if (time) {
-                    timeMap[time] = (timeMap[time] || 0) + 1;
-                }
-            });
-            return Object.entries(timeMap).map(([k, v]) => ({name: k, value: v}));
-        }, [filteredRows]);
-
 
 //++++ BUTTON COMPONENT ++++\\
         const [open, setOpen] = useState(false);
@@ -369,7 +348,7 @@ const Stats = () => {
             <Box m="1.5rem 2.5rem">
                 <FlexBetween>
                     <Header
-                        title={`IVB State ${selectedTicker}`}
+                        title={`IVB Stats ${selectedTicker}`}
                         subtitle={`Dataset from ${selectedDataset}`}
                     />
                     <Box>
@@ -612,7 +591,7 @@ const Stats = () => {
                         p="1rem"
                         borderRadius="0.55rem"
                     >
-                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Breakout (True / False)</h4>
+                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Breakout</h4>
 
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={breakoutDistribution}>
@@ -655,7 +634,7 @@ const Stats = () => {
                         p="1rem"
                         borderRadius="0.55rem"
                     >
-                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Conferme (True / False)</h4>
+                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Conferme</h4>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={confirmDistribution}>
                                 <XAxis dataKey="name"/>
@@ -716,7 +695,7 @@ const Stats = () => {
                         p="1rem"
                         borderRadius="0.55rem"
                     >
-                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Breakout (True / False)</h4>
+                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Inversione</h4>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={inversionDistribution}>
                                 <XAxis dataKey="name"/>
@@ -733,7 +712,7 @@ const Stats = () => {
                         p="1rem"
                         borderRadius="0.55rem"
                     >
-                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Distribuzione Orari Breakout</h4>
+                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Distribuzione Orari Breakout Inversione</h4>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={inversionTimeDistribution}>
                                 <XAxis
@@ -757,7 +736,7 @@ const Stats = () => {
                         p="1rem"
                         borderRadius="0.55rem"
                     >
-                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Conferme (True / False)</h4>
+                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Conferme dell'inversione</h4>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={inversionConfirmDistribution}>
                                 <XAxis dataKey="name"/>
@@ -777,7 +756,7 @@ const Stats = () => {
                         p="1rem"
                         borderRadius="0.55rem"
                     >
-                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Distribuzione Orari Conferma</h4>
+                        <h4 style={{textAlign: "center", marginBottom: "10px"}}>Distribuzione Orari Conferma Inversione</h4>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={inversionTimeConfirmDistribution}>
                                 <XAxis
@@ -800,7 +779,7 @@ const Stats = () => {
                         p="1rem"
                         borderRadius="0.55rem"
                     >
-                        <h4 style={{textAlign: "center"}}>Target Raggiunti</h4>
+                        <h4 style={{textAlign: "center"}}>Inversion Target Raggiunti</h4>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={inversionTargetDistribution}>
                                 <XAxis dataKey="name"/>
